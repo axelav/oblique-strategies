@@ -2,7 +2,7 @@
   "scripts": {
     "build": "./scripts/build min",
     "build:dev": "./scripts/build dev",
-    "check-deps": "dependency-check . --entry 'client.js'",
+    "check-deps": "dependency-check . --entry 'src/index.js'",
     "deploy": "npm run test && npm run build && echooo 'figure this out'",
     "lint": "standard",
     "start": "./scripts/build start",
