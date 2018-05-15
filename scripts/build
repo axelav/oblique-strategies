@@ -1,0 +1,99 @@
+#!/bin/sh
+
+usage () {
+  printf "Usage: build <argument>\n"
+}
+
+INDEX="./src/index.js"
+JS_BUNDLE="bundle.js"
+CSS_BUNDLE="bundle.css"
+INDEX_HTML="index.html"
+TITLE="OBLIQUE STRATEGIES"
+# PURIFY="./node_modules/purify-css/bin/purifycss" # TODO can I get this in PATH w/o globally installing?
+
+start () {
+  API_URL=http://localhost:4200/v1 \
+    budo ${INDEX} \
+    --live --pushstate --base --dir ./static \
+    -- -t sheetify/transform -t envify
+}
+
+# -g yo-yoify \ TODO not working, not sure why
+build_dev () {
+  printf "starting build using config: DEV\n--------------------------------\n"
+  printf "creating build directory\n"
+  mkdir -p dist/assets
+  printf "compiling javascript: ${JS_BUNDLE}\n"
+  printf "compiling css: ${CSS_BUNDLE}\n"
+  API_URL=http://localhost:4200/v1 \
+  NODE_ENV=development browserify ${INDEX} \
+    -t sheetify/transform \
+    -t envify \
+    -t yo-yoify \
+    -g es2040 \
+    -p [ css-extract -o dist/assets/${CSS_BUNDLE} ] \
+    > dist/assets/${JS_BUNDLE}
+}
+
+build_min () {
+  printf "starting build using config: MIN\n--------------------------------\n"
+  printf "creating build directory\n"
+  mkdir -p dist/assets
+  printf "compiling javascript: ${JS_BUNDLE}\n"
+  API_URL=https://textnot.es/v1 \
+  NODE_ENV=production browserify ${INDEX} \
+    -t sheetify/transform \
+    -t envify \
+    -t yo-yoify \
+    -g unassertify \
+    -g es2040 \
+    -g uglifyify \
+    -p [ css-extract -o dist/assets/${CSS_BUNDLE} ] \
+    > dist/assets/${JS_BUNDLE}
+    # -p bundle-collapser/plugin \
+    # > dist/assets/${JS_BUNDLE}
+
+  # printf "compiling css: ${CSS_BUNDLE}\n"
+  # if [ -x ${PURIFY} ]; then
+  #   ${PURIFY} dist/assets/${CSS_BUNDLE} dist/assets/${JS_BUNDLE} --min --out dist/assets/${CSS_BUNDLE}
+  # fi
+}
+
+build_html () {
+  printf "compiling html: ${INDEX_HTML}\n"
+  printf "\
+<!doctype html>\
+<html lang=\"en\">\
+<head>\
+<title>${TITLE}</title>\
+<meta \ charset=\"utf-8\">\
+<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0\">\
+<link rel=\"stylesheet\" href=\"/assets/${CSS_BUNDLE}\">\
+</head>\
+<body>\
+<script async src=\"/assets/${JS_BUNDLE}\"></script>\
+</body>\
+</html>\n" > dist/${INDEX_HTML}
+  printf "build complete\n\n"
+}
+
+list_files () {
+  printf "${INDEX_HTML}, ${JS_BUNDLE}, and ${CSS_BUNDLE} have been created in:\n"
+  printf "$(pwd)/dist\n\n"
+  ls -lhR dist
+}
+
+# parse CLI flags
+while true; do
+  case "$1" in
+    -h|--help) usage && exit 1 ;;
+    -- ) shift; break ;;
+    * ) break ;;
+  esac
+done
+
+case "$1" in
+  d|dev) shift; build_dev "$@" && build_html && list_files;;
+  m|min) shift; build_min "$@" && build_html && list_files;;
+  *) shift; start;;
+esac
