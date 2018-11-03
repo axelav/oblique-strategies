@@ -1,0 +1,6 @@
+@import '~tachyons';
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}

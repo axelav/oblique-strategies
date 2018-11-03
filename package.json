@@ -1,30 +1,24 @@
 {
-  "scripts": {
-    "build": "./scripts/build min",
-    "build:dev": "./scripts/build dev",
-    "check-deps": "dependency-check . --entry 'src/index.js'",
-    "deploy": "npm run test && npm run build && echooo 'figure this out'",
-    "lint": "standard",
-    "start": "./scripts/build start",
-    "test": "npm run lint && node tests/*.js"
-  },
-  "devDependencies": {
-    "browserify": "^16.2.2",
-    "budo": "^11.2.0",
-    "css-extract": "^1.3.0",
-    "dependency-check": "^3.1.0",
-    "envify": "^4.1.0",
-    "es2040": "^1.2.6",
-    "standard": "^10.0.3",
-    "uglifyify": "^5.0.0",
-    "unassertify": "^2.1.1",
-    "yo-yoify": "^4.3.0"
-  },
+  "name": "honkytonkin-oblique-strategies",
+  "version": "1.0.0",
   "dependencies": {
-    "choo": "^6.11.0-preview1",
-    "choo-devtools": "^2.5.0",
+    "@zeit/next-css": "^1.0.1",
+    "next": "^7.0.2",
     "oblique-strategies": "^1.0.1",
-    "sheetify": "^7.3.2",
-    "tachyons": "^4.9.1"
+    "react": "^16.6.0",
+    "react-dom": "^16.6.0",
+    "tachyons": "^4.11.1"
+  },
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start",
+    "export": "next export"
+  },
+  "author": "Axel Anderson",
+  "license": "MIT",
+  "now": {
+    "name": "oblique-strategies",
+    "type": "static"
   }
 }
